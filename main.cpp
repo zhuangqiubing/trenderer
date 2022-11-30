@@ -31,10 +31,53 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, TGAColor color) {
     }
 }
 
-void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage &image, TGAColor color) {
-    line(t0, t1, image, color);
-    line(t1, t2, image, color);
-    line(t2, t0, image, color);
+//void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {
+//    line(t0, t1, image, color);
+//    line(t1, t2, image, color);
+//    line(t2, t0, image, color);
+//}
+
+void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color)
+{
+    if (t0.y > t1.y) std::swap(t0, t1);
+    if (t0.y > t2.y) std::swap(t0, t2);
+    if (t1.y > t2.y) std::swap(t1, t2);
+
+    float alph = float(t2.x - t0.x) / (t2.y - t0.y);
+    float beta = float(t1.x - t0.x) / (t1.y - t0.y);
+    float x1 = t0.x;
+    float x2 = t0.x;
+    float x_left = 0;
+    float x_right = 0;
+    image.set(t0.x, t0.y, color);
+    for (int y = t0.y; y < t1.y+1; y++)
+    {
+        x_left = x1;
+        x_right = x2;
+        if (x_left > x_right) std::swap(x_left, x_right);
+        for (int x = int(x_left)+1; x < x_right+1; x++)
+        {
+            image.set(x, y, color);
+        }
+        x1 += alph;
+        x2 += beta;
+    }
+    alph = float(t0.x - t2.x) / (t2.y - t0.y);
+    beta = float(t1.x - t2.x) / (t2.y - t1.y);
+    x1 = t2.x;
+    x2 = t2.x;
+    for (int y = t2.y; y > t1.y; y--)
+    {
+        x_left = x1;
+        x_right = x2;
+        if (x_left > x_right) std::swap(x_left, x_right);
+        for (int x = int(x_left) + 1; x < x_right + 1; x++)
+        {
+            image.set(x, y, color);
+        }
+        x1 += alph;
+        x2 += beta;
+    }
 }
 
 int main(int argc, char** argv) {
